@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>CyberX AI Dashboard</title>
+
+    <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+    <!-- BACKGROUND -->
+
+    <div class="bg-animation">
+
+        <span></span>
+        <span></span>
+        <span></span>
+
+    </div>
+
+    <!-- TOPBAR -->
+
+    <div class="topbar">
+
+        <div class="logo">
+            CYBERX AI
+        </div>
+
+        <div class="status-bar">
+
+            <div class="status online">
+                AI ENGINE : ACTIVE
+            </div>
+
+            <div class="status online">
+                FIREWALL : ENABLED
+            </div>
+
+            <div class="status online">
+                DATABASE : CONNECTED
+            </div>
+
+            <div class="status" id="clock">
+
+                00:00:00
+
+            </div>
+
+        </div>
+
+        <a href="/">
+
+            <button class="logout-btn">
+                Logout
+            </button>
+
+        </a>
+
+    </div>
+
+    <!-- TITLE -->
+
+    <h1>CyberX AI Dashboard</h1>
+
+    <p class="subtitle">
+
+        AI Powered Cyber Security Dashboard
+
+    </p>
+
+    <!-- DASHBOARD -->
+
+    <div class="dashboard">
+
+        <div class="card">
+
+            <h3>Total Scans</h3>
+
+            <h2>{{ total }}</h2>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Safe URLs</h3>
+
+            <h2>{{ safe }}</h2>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Dangerous URLs</h3>
+
+            <h2>{{ dangerous }}</h2>
+
+        </div>
+
+    </div>
+
+    <!-- FORM -->
+
+    <form
+    action="/check"
+    method="POST"
+    id="scanForm"
+    >
+
+        <input
+        type="text"
+        name="url"
+        placeholder="Enter URL to scan..."
+        required
+        >
+
+        <button type="submit">
+
+            AI Scan
+
+        </button>
+
+    </form>
+
+    <!-- RESULT -->
+
+    {% if result == "SAFE" %}
+
+        <h2 class="safe">
+
+            SAFE
+
+        </h2>
+
+    {% endif %}
+
+    {% if result == "DANGEROUS" %}
+
+        <h2 class="danger">
+
+            DANGEROUS
+
+        </h2>
+
+    {% endif %}
+
+    <!-- THREAT SCORE -->
+
+    {% if threat_score %}
+
+        <h2 class="score">
+
+            Threat Score :
+            {{ threat_score }}
+
+        </h2>
+
+    {% endif %}
+
+    <!-- PIE CHART -->
+
+    <div class="chart-box">
+
+        <h2>
+            Threat Analytics
+        </h2>
+
+        <canvas id="myChart"></canvas>
+
+    </div>
+
+    <!-- DOWNLOAD -->
+
+    <div class="download-box">
+
+        <a href="/download_report">
+
+            <button class="download-btn">
+
+                Download PDF Report
+
+            </button>
+
+        </a>
+
+    </div>
+
+    <!-- LIVE TERMINAL -->
+
+    <div class="terminal-box">
+
+        <div class="terminal-header">
+
+            LIVE CYBER LOGS
+
+        </div>
+
+        <div
+        class="terminal-body"
+        id="terminal"
+        >
+
+            <p>[SYSTEM] CyberX AI Started...</p>
+
+        </div>
+
+    </div>
+
+    <!-- HISTORY -->
+
+    <table>
+
+        <tr>
+
+            <th>URL</th>
+
+            <th>Result</th>
+
+        </tr>
+
+        {% for scan in scans %}
+
+        <tr>
+
+            <td>{{ scan[0] }}</td>
+
+            <td>{{ scan[1] }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    <!-- LOADING -->
+
+    <div id="loading-screen">
+
+        <div class="loader"></div>
+
+        <h2 id="loading-text">
+            AI Scanning URL... 0%
+        </h2>
+
+    </div>
+
+    <!-- CHART JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- SCRIPT -->
+
+    <script>
+
+        // LOADING
+
+        const form =
+        document.getElementById("scanForm");
+
+        const loading =
+        document.getElementById(
+            "loading-screen"
+        );
+
+        const loadingText =
+        document.getElementById(
+            "loading-text"
+        );
+
+        form.addEventListener(
+            "submit",
+
+            function(){
+
+                loading.style.display =
+                "flex";
+
+                let percent = 0;
+
+                const interval =
+                setInterval(() => {
+
+                    percent += 5;
+
+                    loadingText.innerHTML =
+                    "AI Scanning URL... " +
+                    percent + "%";
+
+                    if(percent >= 100){
+
+                        clearInterval(interval);
+                    }
+
+                }, 100);
+            }
+        );
+
+        // LIVE CLOCK
+
+        function updateClock(){
+
+            const now = new Date();
+
+            const time =
+            now.toLocaleTimeString();
+
+            document.getElementById(
+                "clock"
+            ).innerHTML = time;
+        }
+
+        setInterval(updateClock, 1000);
+
+        updateClock();
+
+        // PIE CHART
+
+        const ctx =
+        document.getElementById('myChart');
+
+        new Chart(ctx, {
+
+            type: 'doughnut',
+
+            data: {
+
+                labels: [
+                    'Safe',
+                    'Dangerous'
+                ],
+
+                datasets: [{
+
+                    data: [
+                        {{ safe }},
+                        {{ dangerous }}
+                    ],
+
+                    backgroundColor: [
+                        '#22c55e',
+                        '#ef4444'
+                    ],
+
+                    borderWidth:0
+
+                }]
+            },
+
+            options: {
+
+                responsive:true,
+
+                plugins: {
+
+                    legend: {
+
+                        labels: {
+
+                            color:'white',
+
+                            font:{
+                                size:16
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // LIVE TERMINAL LOGS
+
+        const terminal =
+        document.getElementById(
+            "terminal"
+        );
+
+        const logs = [
+
+            "[INFO] Firewall Enabled...",
+
+            "[AI] Threat Analysis Running...",
+
+            "[SCAN] Monitoring URL Traffic...",
+
+            "[SAFE] Connection Verified...",
+
+            "[WARNING] Suspicious Activity Detected...",
+
+            "[SYSTEM] AI Engine Active...",
+
+            "[SECURITY] Real-Time Protection Enabled...",
+
+            "[AI] Deep Scan Complete..."
+        ];
+
+        function addLog(){
+
+            const log =
+            document.createElement("p");
+
+            log.innerText =
+            logs[
+                Math.floor(
+                    Math.random() * logs.length
+                )
+            ];
+
+            terminal.appendChild(log);
+
+            terminal.scrollTop =
+            terminal.scrollHeight;
+
+            if(
+                terminal.children.length > 12
+            ){
+
+                terminal.removeChild(
+                    terminal.children[0]
+                );
+            }
+        }
+
+        setInterval(addLog, 2000);
+
+    </script>
+
+</body>
+
+</html>

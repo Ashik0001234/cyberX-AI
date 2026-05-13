@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>CyberX AI Login</title>
+
+    <style>
+
+        body{
+            background:black;
+            overflow:hidden;
+            font-family:Courier New;
+            color:lime;
+            text-align:center;
+        }
+
+        /* MATRIX EFFECT */
+
+        .matrix{
+            position:fixed;
+            width:100%;
+            height:100%;
+            top:0;
+            left:0;
+            z-index:-1;
+            opacity:0.15;
+        }
+
+        .login-box{
+
+            margin:auto;
+            margin-top:120px;
+
+            width:420px;
+
+            border:2px solid lime;
+
+            padding:40px;
+
+            background:rgba(0,0,0,0.85);
+
+            box-shadow:
+            0 0 20px lime,
+            0 0 40px lime,
+            0 0 60px lime;
+
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow{
+
+            from{
+                box-shadow:
+                0 0 10px lime;
+            }
+
+            to{
+                box-shadow:
+                0 0 40px lime,
+                0 0 80px lime;
+            }
+        }
+
+        h1{
+
+            font-size:40px;
+
+            margin-bottom:30px;
+
+            text-shadow:
+            0 0 10px lime,
+            0 0 20px lime,
+            0 0 40px lime;
+        }
+
+        .typing{
+
+            color:lime;
+
+            font-size:18px;
+
+            margin-bottom:20px;
+
+            white-space:nowrap;
+
+            overflow:hidden;
+
+            border-right:3px solid lime;
+
+            width:0;
+
+            animation:
+            typing 4s steps(40,end) forwards,
+            blink 1s infinite;
+        }
+
+        @keyframes typing{
+            from{ width:0; }
+            to{ width:100%; }
+        }
+
+        @keyframes blink{
+            50%{ border-color:transparent; }
+        }
+
+        input{
+
+            width:90%;
+
+            padding:14px;
+
+            margin-top:18px;
+
+            background:black;
+
+            border:2px solid lime;
+
+            color:lime;
+
+            font-size:18px;
+
+            outline:none;
+
+            box-shadow:0 0 10px lime;
+        }
+
+        input:focus{
+
+            box-shadow:
+            0 0 20px lime,
+            0 0 40px lime;
+        }
+
+        button{
+
+            margin-top:30px;
+
+            width:95%;
+
+            padding:14px;
+
+            background:lime;
+
+            color:black;
+
+            border:none;
+
+            font-size:20px;
+
+            font-weight:bold;
+
+            cursor:pointer;
+
+            transition:0.3s;
+        }
+
+        button:hover{
+
+            background:white;
+
+            transform:scale(1.05);
+
+            box-shadow:
+            0 0 20px white,
+            0 0 40px lime;
+        }
+
+        .footer{
+
+            margin-top:25px;
+
+            font-size:14px;
+
+            color:lime;
+
+            opacity:0.7;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <canvas class="matrix"></canvas>
+
+    <div class="login-box">
+
+        <h1>CYBERX AI</h1>
+
+        <div class="typing">
+            Initializing Cyber Security Protocol...
+        </div>
+
+        <form action="/logincheck" method="POST">
+
+            <input type="text"
+                   name="username"
+                   placeholder="Enter Username">
+
+            <input type="password"
+                   name="password"
+                   placeholder="Enter Password">
+
+            <button type="submit">
+                ACCESS SYSTEM
+            </button>
+
+        </form>
+
+        <div class="footer">
+            AUTHORIZED ACCESS ONLY
+        </div>
+
+    </div>
+
+    <script>
+
+        // MATRIX EFFECT
+
+        const canvas = document.querySelector(".matrix");
+
+        const ctx = canvas.getContext("2d");
+
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+
+        const letters =
+        "01ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        const fontSize = 14;
+
+        const columns =
+        canvas.width / fontSize;
+
+        const drops = [];
+
+        for(let x = 0; x < columns; x++){
+
+            drops[x] = 1;
+        }
+
+        function draw(){
+
+            ctx.fillStyle =
+            "rgba(0,0,0,0.05)";
+
+            ctx.fillRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            ctx.fillStyle = "lime";
+
+            ctx.font =
+            fontSize + "px monospace";
+
+            for(let i = 0; i < drops.length; i++){
+
+                const text =
+                letters.charAt(
+                    Math.floor(
+                        Math.random() *
+                        letters.length
+                    )
+                );
+
+                ctx.fillText(
+                    text,
+                    i * fontSize,
+                    drops[i] * fontSize
+                );
+
+                if(
+                    drops[i] * fontSize >
+                    canvas.height &&
+                    Math.random() > 0.975
+                ){
+                    drops[i] = 0;
+                }
+
+                drops[i]++;
+            }
+        }
+
+        setInterval(draw, 35);
+
+    </script>
+
+</body>
+
+</html>
